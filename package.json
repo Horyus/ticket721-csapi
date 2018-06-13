@@ -1,0 +1,21 @@
+{
+  "name": "ticket721-csapi",
+  "version": "0.0.1",
+  "description": "API Client to communicate with ticket721-cacheserver",
+  "main": "index.js",
+  "scripts": {
+    "babel": "babel es6 -d ./",
+    "postinstall": "npm run babel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:Horyus/ticket721/ticket721-csapi"
+  },
+  "author": "Iulian Rotaru (mortimr)",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
