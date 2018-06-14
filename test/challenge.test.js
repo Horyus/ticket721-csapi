@@ -59,31 +59,31 @@ describe("Testing Challenge", () => {
 
 });
 
-//describe("Auth Testing", () => {
-//
-//    let Web3;
-//    let api;
-//    let coinbase;
-//
-//    let signatures = [];
-//
-//    beforeAll(async (done) => {
-//        Web3 = new _Web3(new _Web3.providers.HttpProvider("http://localhost:8548"));
-//        coinbase = await Web3.eth.getCoinbase();
-//        api = new T721CSAPI("http://localhost:8080", coinbase, Web3);
-//        done();
-//    });
-//
-//    test("Register", async (done) => {
-//        console.log(await api.register());
-//        done();
-//    }, 30000);
-//
-//    test("Login", async (done) => {
-//        console.log(await api.connect());
-//        done();
-//    }, 30000);
-//
-//});
+describe("Auth Testing", () => {
+
+    let Web3;
+    let api;
+    let coinbase;
+
+    let signatures = [];
+
+    beforeAll(async (done) => {
+        Web3 = new _Web3(new _Web3.providers.HttpProvider("http://localhost:8548"));
+        coinbase = await Web3.eth.getCoinbase();
+        api = new T721CSAPI("http://localhost:8080", coinbase, Web3);
+        done();
+    });
+
+    test("Register", async (done) => {
+        console.log(await api.register());
+        done();
+    }, 30000);
+
+    test("Login", async (done) => {
+        console.log(await api.connect());
+        done();
+    }, 30000);
+
+});
 
 
