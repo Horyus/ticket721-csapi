@@ -31,6 +31,8 @@
     "globalTeardown": "./test_setup/teardown.js"
   },
   "dependencies": {
-    "ethers": "^3.0.21"
+    "ethers": "^3.0.21",
+    "querystring": "^0.2.0",
+    "request": "^2.87.0"
   }
 }

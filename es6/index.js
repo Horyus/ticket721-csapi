@@ -14,19 +14,80 @@ export function compareAddress(address_one, address_two) {
 
 export class T721CSAPI {
 
-    constructor(url, password, coinbase, web3) {
+    constructor(url, coinbase, web3) {
         this.url = url;
-        this.password = password;
         this.coinbase = coinbase;
         this.web3 = web3;
+        this.request = require('request');
     }
 
-    register() {
-
+    async challenge() {
+        return new Promise((ok, ko) => {
+            this.request.post({url: this.url + "/challenge", form: {address: this.coinbase}}, (err, resp, body) => {
+                if (err) {
+                    ko(err);
+                } else {
+                    try {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.challenge);
+                    } catch (e) {
+                        ko(e);
+                    }
+                }
+            });
+        });
     }
 
-    connect() {
+    async register() {
+        return new Promise(async (ok, ko) => {
+            try {
+                const challenge = await this.challenge();
+                const signature = await this.signChallenge(challenge);
+                this.request.post({url: this.url + "/register", form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                    if (err) {
+                        ko(err);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        this.token = signature;
+                        ok(parsed_body.address);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
 
+
+    async connect() {
+        return new Promise(async (ok, ko) => {
+            try {
+                if (this.token) {
+                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: this.token}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body.logged);
+                        }
+                    })
+                } else {
+                    const challenge = await this.challenge();
+                    const signature = await this.signChallenge(challenge);
+                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            this.token = signature;
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body.logged);
+                        }
+                    })
+                }
+            } catch (e) {
+                ko(e);
+            }
+        });
     }
 
     async signChallenge(challenge) {

@@ -2,6 +2,7 @@ const _Web3 = require("web3");
 const T721CSAPI = require("../index.js").T721CSAPI;
 const randomstring = require("randomstring");
 
+const _describe = () => {};
 
 describe("Testing Challenge", () => {
 
@@ -14,7 +15,7 @@ describe("Testing Challenge", () => {
     beforeAll(async (done) => {
         Web3 = new _Web3(new _Web3.providers.HttpProvider("http://localhost:8548"));
         coinbase = await Web3.eth.getCoinbase();
-        api = new T721CSAPI("", "", coinbase, Web3);
+        api = new T721CSAPI(process.env.API_URL || "http://localhost:8080", coinbase, Web3);
         done();
     });
 
@@ -57,3 +58,32 @@ describe("Testing Challenge", () => {
     });
 
 });
+
+//describe("Auth Testing", () => {
+//
+//    let Web3;
+//    let api;
+//    let coinbase;
+//
+//    let signatures = [];
+//
+//    beforeAll(async (done) => {
+//        Web3 = new _Web3(new _Web3.providers.HttpProvider("http://localhost:8548"));
+//        coinbase = await Web3.eth.getCoinbase();
+//        api = new T721CSAPI("http://localhost:8080", coinbase, Web3);
+//        done();
+//    });
+//
+//    test("Register", async (done) => {
+//        console.log(await api.register());
+//        done();
+//    }, 30000);
+//
+//    test("Login", async (done) => {
+//        console.log(await api.connect());
+//        done();
+//    }, 30000);
+//
+//});
+
+
