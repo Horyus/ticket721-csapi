@@ -90,6 +90,60 @@ export class T721CSAPI {
         });
     }
 
+    async get_infos() {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.get({url: this.url + "/", followAllRedirects: true, jar: true}, (err, resp, body) => {
+                    if (err) {
+                        ko(err);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
+    async refresh_wallets() {
+        return new Promise(async (ok, ko) => {
+            try {
+                if (this.token) {
+                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body);
+                        }
+                    })
+                } else {
+                    const challenge = await this.challenge();
+                    const signature = await this.signChallenge(challenge);
+                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            this.token = signature;
+                            this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
+                                if (err) {
+                                    ko(err);
+                                } else {
+                                    const parsed_body = JSON.parse(body);
+                                    ok(parsed_body);
+                                }
+                            })
+                        }
+                    })
+                }
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
     async signChallenge(challenge) {
         return (await this.web3.eth.sign(challenge, this.coinbase));
     }
