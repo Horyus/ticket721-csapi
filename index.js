@@ -244,29 +244,185 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return connect;
         }()
     }, {
+        key: "get_infos",
+        value: function () {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+                var _this4 = this;
+
+                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                return _context7.abrupt("return", new Promise(function () {
+                                    var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                                            while (1) {
+                                                switch (_context6.prev = _context6.next) {
+                                                    case 0:
+                                                        try {
+                                                            _this4.request.get({ url: _this4.url + "/", followAllRedirects: true, jar: true }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
+                                                        }
+
+                                                    case 1:
+                                                    case "end":
+                                                        return _context6.stop();
+                                                }
+                                            }
+                                        }, _callee6, _this4);
+                                    }));
+
+                                    return function (_x5, _x6) {
+                                        return _ref7.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
+
+            function get_infos() {
+                return _ref6.apply(this, arguments);
+            }
+
+            return get_infos;
+        }()
+    }, {
+        key: "refresh_wallets",
+        value: function () {
+            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+                var _this5 = this;
+
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
+                    while (1) {
+                        switch (_context9.prev = _context9.next) {
+                            case 0:
+                                return _context9.abrupt("return", new Promise(function () {
+                                    var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(ok, ko) {
+                                        var challenge, signature;
+                                        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                                            while (1) {
+                                                switch (_context8.prev = _context8.next) {
+                                                    case 0:
+                                                        _context8.prev = 0;
+
+                                                        if (!_this5.token) {
+                                                            _context8.next = 5;
+                                                            break;
+                                                        }
+
+                                                        _this5.request.post({ url: _this5.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+                                                        _context8.next = 12;
+                                                        break;
+
+                                                    case 5:
+                                                        _context8.next = 7;
+                                                        return _this5.challenge();
+
+                                                    case 7:
+                                                        challenge = _context8.sent;
+                                                        _context8.next = 10;
+                                                        return _this5.signChallenge(challenge);
+
+                                                    case 10:
+                                                        signature = _context8.sent;
+
+                                                        _this5.request.post({ url: _this5.url + "/login", followAllRedirects: true, jar: true, form: { address: _this5.coinbase, signature: signature } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                _this5.token = signature;
+                                                                _this5.request.post({ url: _this5.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
+                                                                    if (err) {
+                                                                        ko(err);
+                                                                    } else {
+                                                                        var parsed_body = JSON.parse(body);
+                                                                        ok(parsed_body);
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+
+                                                    case 12:
+                                                        _context8.next = 17;
+                                                        break;
+
+                                                    case 14:
+                                                        _context8.prev = 14;
+                                                        _context8.t0 = _context8["catch"](0);
+
+                                                        ko(_context8.t0);
+
+                                                    case 17:
+                                                    case "end":
+                                                        return _context8.stop();
+                                                }
+                                            }
+                                        }, _callee8, _this5, [[0, 14]]);
+                                    }));
+
+                                    return function (_x7, _x8) {
+                                        return _ref9.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context9.stop();
+                        }
+                    }
+                }, _callee9, this);
+            }));
+
+            function refresh_wallets() {
+                return _ref8.apply(this, arguments);
+            }
+
+            return refresh_wallets;
+        }()
+    }, {
         key: "signChallenge",
         value: function () {
-            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(challenge) {
-                return regeneratorRuntime.wrap(function _callee6$(_context6) {
+            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(challenge) {
+                return regeneratorRuntime.wrap(function _callee10$(_context10) {
                     while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context10.prev = _context10.next) {
                             case 0:
-                                _context6.next = 2;
+                                _context10.next = 2;
                                 return this.web3.eth.sign(challenge, this.coinbase);
 
                             case 2:
-                                return _context6.abrupt("return", _context6.sent);
+                                return _context10.abrupt("return", _context10.sent);
 
                             case 3:
                             case "end":
-                                return _context6.stop();
+                                return _context10.stop();
                         }
                     }
-                }, _callee6, this);
+                }, _callee10, this);
             }));
 
-            function signChallenge(_x5) {
-                return _ref6.apply(this, arguments);
+            function signChallenge(_x9) {
+                return _ref10.apply(this, arguments);
             }
 
             return signChallenge;
