@@ -75,6 +75,7 @@ export class T721CSAPI {
                     const challenge = await this.challenge();
                     const signature = await this.signChallenge(challenge);
                     this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                        console.log(err, resp, body);
                         if (err) {
                             ko(err);
                         } else {
@@ -101,6 +102,23 @@ export class T721CSAPI {
                         ok(parsed_body);
                     }
                 })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
+    async registered() {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.post({url: this.url + "/registered", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
+                    if (err) {
+                        ko(err);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body);
+                    }
+                });
             } catch (e) {
                 ko(e);
             }
@@ -145,7 +163,28 @@ export class T721CSAPI {
     }
 
     async signChallenge(challenge) {
-        return (await this.web3.eth.sign(challenge, this.coinbase));
+        return new Promise((ok, ko) => {
+            const msgParams = [{
+                    type: 'string',
+                    name: 'challenge',
+                    value: challenge
+                }];
+            try {
+                this.web3.currentProvider.sendAsync({
+                    method: 'eth_signTypedData',
+                    params: [msgParams, this.coinbase]
+                }, (err, result) => {
+                    console.log(err, result);
+                    if (err) {
+                        ko(err);
+                    } else {
+                        ok(result.result);
+                    }
+                });
+            } catch (e) {
+                ko(e);
+            }
+        })
     }
 
     verify(challenge, signature, address) {

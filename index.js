@@ -197,6 +197,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                         signature = _context4.sent;
 
                                                         _this3.request.post({ url: _this3.url + "/login", followAllRedirects: true, jar: true, form: { address: _this3.coinbase, signature: signature } }, function (err, resp, body) {
+                                                            console.log(err, resp, body);
                                                             if (err) {
                                                                 ko(err);
                                                             } else {
@@ -300,7 +301,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return get_infos;
         }()
     }, {
-        key: "refresh_wallets",
+        key: "registered",
         value: function () {
             var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
                 var _this5 = this;
@@ -311,73 +312,29 @@ var T721CSAPI = exports.T721CSAPI = function () {
                             case 0:
                                 return _context9.abrupt("return", new Promise(function () {
                                     var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(ok, ko) {
-                                        var challenge, signature;
                                         return regeneratorRuntime.wrap(function _callee8$(_context8) {
                                             while (1) {
                                                 switch (_context8.prev = _context8.next) {
                                                     case 0:
-                                                        _context8.prev = 0;
-
-                                                        if (!_this5.token) {
-                                                            _context8.next = 5;
-                                                            break;
+                                                        try {
+                                                            _this5.request.post({ url: _this5.url + "/registered", followAllRedirects: true, jar: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
                                                         }
 
-                                                        _this5.request.post({ url: _this5.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body);
-                                                            }
-                                                        });
-                                                        _context8.next = 12;
-                                                        break;
-
-                                                    case 5:
-                                                        _context8.next = 7;
-                                                        return _this5.challenge();
-
-                                                    case 7:
-                                                        challenge = _context8.sent;
-                                                        _context8.next = 10;
-                                                        return _this5.signChallenge(challenge);
-
-                                                    case 10:
-                                                        signature = _context8.sent;
-
-                                                        _this5.request.post({ url: _this5.url + "/login", followAllRedirects: true, jar: true, form: { address: _this5.coinbase, signature: signature } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                _this5.token = signature;
-                                                                _this5.request.post({ url: _this5.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
-                                                                    if (err) {
-                                                                        ko(err);
-                                                                    } else {
-                                                                        var parsed_body = JSON.parse(body);
-                                                                        ok(parsed_body);
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-
-                                                    case 12:
-                                                        _context8.next = 17;
-                                                        break;
-
-                                                    case 14:
-                                                        _context8.prev = 14;
-                                                        _context8.t0 = _context8["catch"](0);
-
-                                                        ko(_context8.t0);
-
-                                                    case 17:
+                                                    case 1:
                                                     case "end":
                                                         return _context8.stop();
                                                 }
                                             }
-                                        }, _callee8, _this5, [[0, 14]]);
+                                        }, _callee8, _this5);
                                     }));
 
                                     return function (_x7, _x8) {
@@ -393,8 +350,108 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee9, this);
             }));
 
-            function refresh_wallets() {
+            function registered() {
                 return _ref8.apply(this, arguments);
+            }
+
+            return registered;
+        }()
+    }, {
+        key: "refresh_wallets",
+        value: function () {
+            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
+                var _this6 = this;
+
+                return regeneratorRuntime.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                return _context11.abrupt("return", new Promise(function () {
+                                    var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(ok, ko) {
+                                        var challenge, signature;
+                                        return regeneratorRuntime.wrap(function _callee10$(_context10) {
+                                            while (1) {
+                                                switch (_context10.prev = _context10.next) {
+                                                    case 0:
+                                                        _context10.prev = 0;
+
+                                                        if (!_this6.token) {
+                                                            _context10.next = 5;
+                                                            break;
+                                                        }
+
+                                                        _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+                                                        _context10.next = 12;
+                                                        break;
+
+                                                    case 5:
+                                                        _context10.next = 7;
+                                                        return _this6.challenge();
+
+                                                    case 7:
+                                                        challenge = _context10.sent;
+                                                        _context10.next = 10;
+                                                        return _this6.signChallenge(challenge);
+
+                                                    case 10:
+                                                        signature = _context10.sent;
+
+                                                        _this6.request.post({ url: _this6.url + "/login", followAllRedirects: true, jar: true, form: { address: _this6.coinbase, signature: signature } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                _this6.token = signature;
+                                                                _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
+                                                                    if (err) {
+                                                                        ko(err);
+                                                                    } else {
+                                                                        var parsed_body = JSON.parse(body);
+                                                                        ok(parsed_body);
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+
+                                                    case 12:
+                                                        _context10.next = 17;
+                                                        break;
+
+                                                    case 14:
+                                                        _context10.prev = 14;
+                                                        _context10.t0 = _context10["catch"](0);
+
+                                                        ko(_context10.t0);
+
+                                                    case 17:
+                                                    case "end":
+                                                        return _context10.stop();
+                                                }
+                                            }
+                                        }, _callee10, _this6, [[0, 14]]);
+                                    }));
+
+                                    return function (_x9, _x10) {
+                                        return _ref11.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this);
+            }));
+
+            function refresh_wallets() {
+                return _ref10.apply(this, arguments);
             }
 
             return refresh_wallets;
@@ -402,27 +459,46 @@ var T721CSAPI = exports.T721CSAPI = function () {
     }, {
         key: "signChallenge",
         value: function () {
-            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(challenge) {
-                return regeneratorRuntime.wrap(function _callee10$(_context10) {
+            var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12(challenge) {
+                var _this7 = this;
+
+                return regeneratorRuntime.wrap(function _callee12$(_context12) {
                     while (1) {
-                        switch (_context10.prev = _context10.next) {
+                        switch (_context12.prev = _context12.next) {
                             case 0:
-                                _context10.next = 2;
-                                return this.web3.eth.sign(challenge, this.coinbase);
+                                return _context12.abrupt("return", new Promise(function (ok, ko) {
+                                    var msgParams = [{
+                                        type: 'string',
+                                        name: 'challenge',
+                                        value: challenge
+                                    }];
+                                    try {
+                                        _this7.web3.currentProvider.sendAsync({
+                                            method: 'eth_signTypedData',
+                                            params: [msgParams, _this7.coinbase]
+                                        }, function (err, result) {
+                                            console.log(err, result);
+                                            if (err) {
+                                                ko(err);
+                                            } else {
+                                                ok(result.result);
+                                            }
+                                        });
+                                    } catch (e) {
+                                        ko(e);
+                                    }
+                                }));
 
-                            case 2:
-                                return _context10.abrupt("return", _context10.sent);
-
-                            case 3:
+                            case 1:
                             case "end":
-                                return _context10.stop();
+                                return _context12.stop();
                         }
                     }
-                }, _callee10, this);
+                }, _callee12, this);
             }));
 
-            function signChallenge(_x9) {
-                return _ref10.apply(this, arguments);
+            function signChallenge(_x11) {
+                return _ref12.apply(this, arguments);
             }
 
             return signChallenge;
