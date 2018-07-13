@@ -26,6 +26,8 @@ function compareAddress(address_one, address_two) {
     return address_one.toLowerCase() === address_two.toLowerCase();
 }
 
+var request = require('request');
+
 var T721CSAPI = exports.T721CSAPI = function () {
     function T721CSAPI(url, coinbase, web3) {
         _classCallCheck(this, T721CSAPI);
@@ -33,7 +35,12 @@ var T721CSAPI = exports.T721CSAPI = function () {
         this.url = url;
         this.coinbase = coinbase;
         this.web3 = web3;
-        this.request = require('request');
+        this.request = request.defaults({
+            headers: {
+                'Access-Control-Request-Headers': 'withcredentials'
+            },
+            jar: true
+        });
     }
 
     _createClass(T721CSAPI, [{
@@ -47,7 +54,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                         switch (_context.prev = _context.next) {
                             case 0:
                                 return _context.abrupt("return", new Promise(function (ok, ko) {
-                                    _this.request.post({ url: _this.url + "/challenge", form: { address: _this.coinbase } }, function (err, resp, body) {
+                                    _this.request.post({ url: _this.url + "/challenge", jar: true, form: { address: _this.coinbase } }, function (err, resp, body) {
                                         if (err) {
                                             ko(err);
                                         } else {
@@ -104,12 +111,11 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                     case 6:
                                                         signature = _context2.sent;
 
-                                                        _this2.request.post({ url: _this2.url + "/register", form: { address: _this2.coinbase, signature: signature } }, function (err, resp, body) {
+                                                        _this2.request.post({ url: _this2.url + "/register", followAllRedirects: true, form: { address: _this2.coinbase, signature: signature } }, function (err, resp, body) {
                                                             if (err) {
                                                                 ko(err);
                                                             } else {
                                                                 var parsed_body = JSON.parse(body);
-                                                                _this2.token = signature;
                                                                 ok(parsed_body.address);
                                                             }
                                                         });
@@ -173,14 +179,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                             break;
                                                         }
 
-                                                        _this3.request.post({ url: _this3.url + "/login", followAllRedirects: true, jar: true, form: { address: _this3.coinbase, signature: _this3.token } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body.logged);
-                                                            }
-                                                        });
+                                                        ok(true);
                                                         _context4.next = 12;
                                                         break;
 
@@ -196,14 +195,13 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                     case 10:
                                                         signature = _context4.sent;
 
-                                                        _this3.request.post({ url: _this3.url + "/login", followAllRedirects: true, jar: true, form: { address: _this3.coinbase, signature: signature } }, function (err, resp, body) {
-                                                            console.log(err, resp, body);
+                                                        _this3.request.post({ url: _this3.url + "/login", followAllRedirects: true, form: { address: _this3.coinbase, signature: signature } }, function (err, resp, body) {
                                                             if (err) {
                                                                 ko(err);
                                                             } else {
-                                                                _this3.token = signature;
                                                                 var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body.logged);
+                                                                _this3.token = parsed_body.token;
+                                                                ok(true);
                                                             }
                                                         });
 
@@ -260,25 +258,54 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                             while (1) {
                                                 switch (_context6.prev = _context6.next) {
                                                     case 0:
-                                                        try {
-                                                            _this4.request.get({ url: _this4.url + "/", followAllRedirects: true, jar: true }, function (err, resp, body) {
-                                                                if (err) {
-                                                                    ko(err);
-                                                                } else {
-                                                                    var parsed_body = JSON.parse(body);
-                                                                    ok(parsed_body);
-                                                                }
-                                                            });
-                                                        } catch (e) {
-                                                            ko(e);
+                                                        _context6.prev = 0;
+
+                                                        if (!_this4.token) {
+                                                            _context6.next = 5;
+                                                            break;
                                                         }
 
-                                                    case 1:
+                                                        _this4.request.get({ url: _this4.url + "/", followAllRedirects: true, jar: true, headers: { 'Authorization': 'bearer ' + _this4.token } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+                                                        _context6.next = 8;
+                                                        break;
+
+                                                    case 5:
+                                                        _context6.next = 7;
+                                                        return _this4.connect();
+
+                                                    case 7:
+                                                        _this4.request.get({ url: _this4.url + "/", followAllRedirects: true, jar: true, headers: { 'Authorization': 'bearer ' + _this4.token } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+
+                                                    case 8:
+                                                        _context6.next = 13;
+                                                        break;
+
+                                                    case 10:
+                                                        _context6.prev = 10;
+                                                        _context6.t0 = _context6["catch"](0);
+
+                                                        ko(_context6.t0);
+
+                                                    case 13:
                                                     case "end":
                                                         return _context6.stop();
                                                 }
                                             }
-                                        }, _callee6, _this4);
+                                        }, _callee6, _this4, [[0, 10]]);
                                     }));
 
                                     return function (_x5, _x6) {
@@ -368,7 +395,6 @@ var T721CSAPI = exports.T721CSAPI = function () {
                             case 0:
                                 return _context11.abrupt("return", new Promise(function () {
                                     var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(ok, ko) {
-                                        var challenge, signature;
                                         return regeneratorRuntime.wrap(function _callee10$(_context10) {
                                             while (1) {
                                                 switch (_context10.prev = _context10.next) {
@@ -380,7 +406,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                             break;
                                                         }
 
-                                                        _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
+                                                        _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: { 'Authorization': 'bearer ' + _this6.token }, form: { address: _this6.coinbase } }, function (err, resp, body) {
                                                             if (err) {
                                                                 ko(err);
                                                             } else {
@@ -388,53 +414,39 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                                 ok(parsed_body);
                                                             }
                                                         });
-                                                        _context10.next = 12;
+                                                        _context10.next = 8;
                                                         break;
 
                                                     case 5:
                                                         _context10.next = 7;
-                                                        return _this6.challenge();
+                                                        return _this6.connect();
 
                                                     case 7:
-                                                        challenge = _context10.sent;
-                                                        _context10.next = 10;
-                                                        return _this6.signChallenge(challenge);
-
-                                                    case 10:
-                                                        signature = _context10.sent;
-
-                                                        _this6.request.post({ url: _this6.url + "/login", followAllRedirects: true, jar: true, form: { address: _this6.coinbase, signature: signature } }, function (err, resp, body) {
+                                                        _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: { 'Authorization': 'bearer ' + _this6.token }, form: { address: _this6.coinbase } }, function (err, resp, body) {
                                                             if (err) {
                                                                 ko(err);
                                                             } else {
-                                                                _this6.token = signature;
-                                                                _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
-                                                                    if (err) {
-                                                                        ko(err);
-                                                                    } else {
-                                                                        var parsed_body = JSON.parse(body);
-                                                                        ok(parsed_body);
-                                                                    }
-                                                                });
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
                                                             }
                                                         });
 
-                                                    case 12:
-                                                        _context10.next = 17;
+                                                    case 8:
+                                                        _context10.next = 13;
                                                         break;
 
-                                                    case 14:
-                                                        _context10.prev = 14;
+                                                    case 10:
+                                                        _context10.prev = 10;
                                                         _context10.t0 = _context10["catch"](0);
 
                                                         ko(_context10.t0);
 
-                                                    case 17:
+                                                    case 13:
                                                     case "end":
                                                         return _context10.stop();
                                                 }
                                             }
-                                        }, _callee10, _this6, [[0, 14]]);
+                                        }, _callee10, _this6, [[0, 10]]);
                                     }));
 
                                     return function (_x9, _x10) {

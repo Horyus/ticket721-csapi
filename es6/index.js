@@ -12,18 +12,25 @@ export function compareAddress(address_one, address_two) {
     return (address_one.toLowerCase() === address_two.toLowerCase())
 }
 
+const request = require('request');
+
 export class T721CSAPI {
 
     constructor(url, coinbase, web3) {
         this.url = url;
         this.coinbase = coinbase;
         this.web3 = web3;
-        this.request = require('request');
+        this.request = request.defaults({
+            headers: {
+                'Access-Control-Request-Headers': 'withcredentials'
+            },
+            jar: true
+        })
     }
 
     async challenge() {
         return new Promise((ok, ko) => {
-            this.request.post({url: this.url + "/challenge", form: {address: this.coinbase}}, (err, resp, body) => {
+            this.request.post({url: this.url + "/challenge", jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
                 if (err) {
                     ko(err);
                 } else {
@@ -43,12 +50,11 @@ export class T721CSAPI {
             try {
                 const challenge = await this.challenge();
                 const signature = await this.signChallenge(challenge);
-                this.request.post({url: this.url + "/register", form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                this.request.post({url: this.url + "/register", followAllRedirects: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
                     if (err) {
                         ko(err);
                     } else {
                         const parsed_body = JSON.parse(body);
-                        this.token = signature;
                         ok(parsed_body.address);
                     }
                 })
@@ -63,25 +69,17 @@ export class T721CSAPI {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
-                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: this.token}}, (err, resp, body) => {
-                        if (err) {
-                            ko(err);
-                        } else {
-                            const parsed_body = JSON.parse(body);
-                            ok(parsed_body.logged);
-                        }
-                    })
+                    ok(true);
                 } else {
                     const challenge = await this.challenge();
                     const signature = await this.signChallenge(challenge);
-                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
-                        console.log(err, resp, body);
+                    this.request.post({url: this.url + "/login", followAllRedirects: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
-                            this.token = signature;
                             const parsed_body = JSON.parse(body);
-                            ok(parsed_body.logged);
+                            this.token = parsed_body.token;
+                            ok(true);
                         }
                     })
                 }
@@ -94,14 +92,26 @@ export class T721CSAPI {
     async get_infos() {
         return new Promise(async (ok, ko) => {
             try {
-                this.request.get({url: this.url + "/", followAllRedirects: true, jar: true}, (err, resp, body) => {
-                    if (err) {
-                        ko(err);
-                    } else {
-                        const parsed_body = JSON.parse(body);
-                        ok(parsed_body);
-                    }
-                })
+                if (this.token) {
+                    this.request.get({url: this.url + "/", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body);
+                        }
+                    })
+                } else {
+                    await this.connect();
+                    this.request.get({url: this.url + "/", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
+                        if (err) {
+                            ko(err);
+                        } else {
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body);
+                        }
+                    })
+                }
             } catch (e) {
                 ko(e);
             }
@@ -129,7 +139,7 @@ export class T721CSAPI {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
-                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
+                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
@@ -138,21 +148,13 @@ export class T721CSAPI {
                         }
                     })
                 } else {
-                    const challenge = await this.challenge();
-                    const signature = await this.signChallenge(challenge);
-                    this.request.post({url: this.url + "/login", followAllRedirects: true, jar: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                    await this.connect();
+                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
-                            this.token = signature;
-                            this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
-                                if (err) {
-                                    ko(err);
-                                } else {
-                                    const parsed_body = JSON.parse(body);
-                                    ok(parsed_body);
-                                }
-                            })
+                            const parsed_body = JSON.parse(body);
+                            ok(parsed_body);
                         }
                     })
                 }
@@ -165,10 +167,10 @@ export class T721CSAPI {
     async signChallenge(challenge) {
         return new Promise((ok, ko) => {
             const msgParams = [{
-                    type: 'string',
-                    name: 'challenge',
-                    value: challenge
-                }];
+                type: 'string',
+                name: 'challenge',
+                value: challenge
+            }];
             try {
                 this.web3.currentProvider.sendAsync({
                     method: 'eth_signTypedData',
