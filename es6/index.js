@@ -25,7 +25,8 @@ export class T721CSAPI {
                 'Access-Control-Request-Headers': 'withcredentials'
             },
             jar: true
-        })
+        });
+        this.token = null;
     }
 
     async challenge() {
@@ -50,12 +51,21 @@ export class T721CSAPI {
             try {
                 const challenge = await this.challenge();
                 const signature = await this.signChallenge(challenge);
-                this.request.post({url: this.url + "/register", followAllRedirects: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                this.request.post({url: this.url + "/register", followAllRedirects: true, form: {address: this.coinbase, signature: signature}}, async (err, resp, body) => {
                     if (err) {
                         ko(err);
                     } else {
                         const parsed_body = JSON.parse(body);
-                        ok(parsed_body.address);
+                        if (compareAddress(parsed_body.address, this.coinbase)) {
+                            try {
+                                console.log("OKLOL");
+                                ok(await this.connect(signature));
+                            } catch (e) {
+                                ko(e);
+                            }
+                        } else {
+                            ko(new Error("Invalid returned address"));
+                        }
                     }
                 })
             } catch (e) {
@@ -65,15 +75,17 @@ export class T721CSAPI {
     }
 
 
-    async connect() {
+    async connect(_signature) {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
                     ok(true);
                 } else {
-                    const challenge = await this.challenge();
-                    const signature = await this.signChallenge(challenge);
-                    this.request.post({url: this.url + "/login", followAllRedirects: true, form: {address: this.coinbase, signature: signature}}, (err, resp, body) => {
+                    if (!_signature) {
+                        const challenge = await this.challenge();
+                        _signature = await this.signChallenge(challenge);
+                    }
+                    this.request.post({url: this.url + "/login", followAllRedirects: true, form: {address: this.coinbase, signature: _signature}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
@@ -93,7 +105,7 @@ export class T721CSAPI {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
-                    this.request.get({url: this.url + "/", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
+                    this.request.get({url: this.url + "/", followAllRedirects: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
@@ -102,8 +114,7 @@ export class T721CSAPI {
                         }
                     })
                 } else {
-                    await this.connect();
-                    this.request.get({url: this.url + "/", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
+                    this.request.get({url: this.url + "/", followAllRedirects: true}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
@@ -121,7 +132,7 @@ export class T721CSAPI {
     async registered() {
         return new Promise(async (ok, ko) => {
             try {
-                this.request.post({url: this.url + "/registered", followAllRedirects: true, jar: true, form: {address: this.coinbase}}, (err, resp, body) => {
+                this.request.post({url: this.url + "/registered", followAllRedirects: true, form: {address: this.coinbase}}, (err, resp, body) => {
                     if (err) {
                         ko(err);
                     } else {
@@ -135,11 +146,11 @@ export class T721CSAPI {
         });
     }
 
-    async refresh_wallets() {
+    async fetch_wallets() {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
-                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
+                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
@@ -148,15 +159,7 @@ export class T721CSAPI {
                         }
                     })
                 } else {
-                    await this.connect();
-                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, jar: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
-                        if (err) {
-                            ko(err);
-                        } else {
-                            const parsed_body = JSON.parse(body);
-                            ok(parsed_body);
-                        }
-                    })
+                    throw new Error("Calling refresh_wallets requires you to be logged");
                 }
             } catch (e) {
                 ko(e);
@@ -176,7 +179,6 @@ export class T721CSAPI {
                     method: 'eth_signTypedData',
                     params: [msgParams, this.coinbase]
                 }, (err, result) => {
-                    console.log(err, result);
                     if (err) {
                         ko(err);
                     } else {
