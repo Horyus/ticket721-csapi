@@ -371,7 +371,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return get_infos;
         }()
     }, {
-        key: "registered",
+        key: "get_events",
         value: function () {
             var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
                 var _this5 = this;
@@ -387,7 +387,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                 switch (_context9.prev = _context9.next) {
                                                     case 0:
                                                         try {
-                                                            _this5.request.post({ url: _this5.url + "/registered", followAllRedirects: true, form: { address: _this5.coinbase } }, function (err, resp, body) {
+                                                            _this5.request.get({ url: _this5.url + "/get_events", followAllRedirects: true }, function (err, resp, body) {
                                                                 if (err) {
                                                                     ko(err);
                                                                 } else {
@@ -420,14 +420,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee10, this);
             }));
 
-            function registered() {
+            function get_events() {
                 return _ref9.apply(this, arguments);
             }
 
-            return registered;
+            return get_events;
         }()
     }, {
-        key: "fetch_wallets",
+        key: "registered",
         value: function () {
             var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
                 var _this6 = this;
@@ -442,43 +442,25 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                             while (1) {
                                                 switch (_context11.prev = _context11.next) {
                                                     case 0:
-                                                        _context11.prev = 0;
-
-                                                        if (!_this6.token) {
-                                                            _context11.next = 5;
-                                                            break;
+                                                        try {
+                                                            _this6.request.post({ url: _this6.url + "/registered", followAllRedirects: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
                                                         }
 
-                                                        _this6.request.post({ url: _this6.url + "/refresh_wallets", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this6.token }, form: { address: _this6.coinbase } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body);
-                                                            }
-                                                        });
-                                                        _context11.next = 6;
-                                                        break;
-
-                                                    case 5:
-                                                        throw new Error("Calling refresh_wallets requires you to be logged");
-
-                                                    case 6:
-                                                        _context11.next = 11;
-                                                        break;
-
-                                                    case 8:
-                                                        _context11.prev = 8;
-                                                        _context11.t0 = _context11["catch"](0);
-
-                                                        ko(_context11.t0);
-
-                                                    case 11:
+                                                    case 1:
                                                     case "end":
                                                         return _context11.stop();
                                                 }
                                             }
-                                        }, _callee11, _this6, [[0, 8]]);
+                                        }, _callee11, _this6);
                                     }));
 
                                     return function (_x13, _x14) {
@@ -494,8 +476,82 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee12, this);
             }));
 
-            function fetch_wallets() {
+            function registered() {
                 return _ref11.apply(this, arguments);
+            }
+
+            return registered;
+        }()
+    }, {
+        key: "fetch_wallets",
+        value: function () {
+            var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
+                var _this7 = this;
+
+                return regeneratorRuntime.wrap(function _callee14$(_context14) {
+                    while (1) {
+                        switch (_context14.prev = _context14.next) {
+                            case 0:
+                                return _context14.abrupt("return", new Promise(function () {
+                                    var _ref14 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee13$(_context13) {
+                                            while (1) {
+                                                switch (_context13.prev = _context13.next) {
+                                                    case 0:
+                                                        _context13.prev = 0;
+
+                                                        if (!_this7.token) {
+                                                            _context13.next = 5;
+                                                            break;
+                                                        }
+
+                                                        _this7.request.post({ url: _this7.url + "/refresh_wallets", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this7.token }, form: { address: _this7.coinbase } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+                                                        _context13.next = 6;
+                                                        break;
+
+                                                    case 5:
+                                                        throw new Error("Calling refresh_wallets requires you to be logged");
+
+                                                    case 6:
+                                                        _context13.next = 11;
+                                                        break;
+
+                                                    case 8:
+                                                        _context13.prev = 8;
+                                                        _context13.t0 = _context13["catch"](0);
+
+                                                        ko(_context13.t0);
+
+                                                    case 11:
+                                                    case "end":
+                                                        return _context13.stop();
+                                                }
+                                            }
+                                        }, _callee13, _this7, [[0, 8]]);
+                                    }));
+
+                                    return function (_x15, _x16) {
+                                        return _ref14.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context14.stop();
+                        }
+                    }
+                }, _callee14, this);
+            }));
+
+            function fetch_wallets() {
+                return _ref13.apply(this, arguments);
             }
 
             return fetch_wallets;
@@ -503,23 +559,23 @@ var T721CSAPI = exports.T721CSAPI = function () {
     }, {
         key: "signChallenge",
         value: function () {
-            var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13(challenge) {
-                var _this7 = this;
+            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(challenge) {
+                var _this8 = this;
 
-                return regeneratorRuntime.wrap(function _callee13$(_context13) {
+                return regeneratorRuntime.wrap(function _callee15$(_context15) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context15.prev = _context15.next) {
                             case 0:
-                                return _context13.abrupt("return", new Promise(function (ok, ko) {
+                                return _context15.abrupt("return", new Promise(function (ok, ko) {
                                     var msgParams = [{
                                         type: 'string',
                                         name: 'challenge',
                                         value: challenge
                                     }];
                                     try {
-                                        _this7.web3.currentProvider.sendAsync({
+                                        _this8.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this7.coinbase]
+                                            params: [msgParams, _this8.coinbase]
                                         }, function (err, result) {
                                             if (err) {
                                                 ko(err);
@@ -534,14 +590,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context13.stop();
+                                return _context15.stop();
                         }
                     }
-                }, _callee13, this);
+                }, _callee15, this);
             }));
 
-            function signChallenge(_x15) {
-                return _ref13.apply(this, arguments);
+            function signChallenge(_x17) {
+                return _ref15.apply(this, arguments);
             }
 
             return signChallenge;

@@ -129,6 +129,23 @@ export class T721CSAPI {
         });
     }
 
+    async get_events() {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.get({url: this.url + "/get_events", followAllRedirects: true}, (err, resp, body) => {
+                    if (err) {
+                        ko(err);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
     async registered() {
         return new Promise(async (ok, ko) => {
             try {
