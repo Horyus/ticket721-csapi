@@ -58,7 +58,6 @@ export class T721CSAPI {
                         const parsed_body = JSON.parse(body);
                         if (compareAddress(parsed_body.address, this.coinbase)) {
                             try {
-                                console.log("OKLOL");
                                 ok(await this.connect(signature));
                             } catch (e) {
                                 ko(e);
@@ -167,7 +166,7 @@ export class T721CSAPI {
         return new Promise(async (ok, ko) => {
             try {
                 if (this.token) {
-                    this.request.post({url: this.url + "/refresh_wallets", followAllRedirects: true, headers: {'Authorization': 'bearer ' + this.token}, form: {address: this.coinbase}}, (err, resp, body) => {
+                    this.request.get({url: this.url + "/refresh_wallets", followAllRedirects: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
                         if (err) {
                             ko(err);
                         } else {
