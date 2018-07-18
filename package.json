@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "API Client to communicate with ticket721-cacheserver",
   "main": "./index.js",
-  "browser": "./index.js",
+  "browser": "index.js",
   "scripts": {
     "test": "jest",
     "babel": "babel es6 -d ./",
@@ -31,6 +31,8 @@
     "globalTeardown": "./test_setup/teardown.js"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "browser-request": "^0.3.3",
     "ethers": "^3.0.21",
     "querystring": "^0.2.0",
     "request": "^2.87.0"
