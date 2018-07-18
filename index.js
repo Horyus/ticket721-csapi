@@ -209,9 +209,9 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return register;
         }()
     }, {
-        key: "connect",
+        key: "check_token",
         value: function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_signature) {
+            var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(_token) {
                 var _this3 = this;
 
                 return regeneratorRuntime.wrap(function _callee6$(_context6) {
@@ -220,66 +220,31 @@ var T721CSAPI = exports.T721CSAPI = function () {
                             case 0:
                                 return _context6.abrupt("return", new Promise(function () {
                                     var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(ok, ko) {
-                                        var challenge;
                                         return regeneratorRuntime.wrap(function _callee5$(_context5) {
                                             while (1) {
                                                 switch (_context5.prev = _context5.next) {
                                                     case 0:
-                                                        _context5.prev = 0;
-
-                                                        if (!_this3.token) {
-                                                            _context5.next = 5;
-                                                            break;
+                                                        try {
+                                                            _this3.request.get({ url: _this3.url + "/check_token", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _token } }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    if (resp.statusCode === 200) {
+                                                                        _this3.token = _token;
+                                                                    }
+                                                                    ok(resp.statusCode === 200);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
                                                         }
 
-                                                        ok(true);
-                                                        _context5.next = 13;
-                                                        break;
-
-                                                    case 5:
-                                                        if (_signature) {
-                                                            _context5.next = 12;
-                                                            break;
-                                                        }
-
-                                                        _context5.next = 8;
-                                                        return _this3.challenge();
-
-                                                    case 8:
-                                                        challenge = _context5.sent;
-                                                        _context5.next = 11;
-                                                        return _this3.signChallenge(challenge);
-
-                                                    case 11:
-                                                        _signature = _context5.sent;
-
-                                                    case 12:
-                                                        _this3.request.post({ url: _this3.url + "/login", followAllRedirects: true, form: { address: _this3.coinbase, signature: _signature } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                _this3.token = parsed_body.token;
-                                                                ok(true);
-                                                            }
-                                                        });
-
-                                                    case 13:
-                                                        _context5.next = 18;
-                                                        break;
-
-                                                    case 15:
-                                                        _context5.prev = 15;
-                                                        _context5.t0 = _context5["catch"](0);
-
-                                                        ko(_context5.t0);
-
-                                                    case 18:
+                                                    case 1:
                                                     case "end":
                                                         return _context5.stop();
                                                 }
                                             }
-                                        }, _callee5, _this3, [[0, 15]]);
+                                        }, _callee5, _this3);
                                     }));
 
                                     return function (_x7, _x8) {
@@ -295,16 +260,16 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee6, this);
             }));
 
-            function connect(_x6) {
+            function check_token(_x6) {
                 return _ref5.apply(this, arguments);
             }
 
-            return connect;
+            return check_token;
         }()
     }, {
-        key: "get_infos",
+        key: "connect",
         value: function () {
-            var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+            var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(_signature) {
                 var _this4 = this;
 
                 return regeneratorRuntime.wrap(function _callee8$(_context8) {
@@ -313,43 +278,69 @@ var T721CSAPI = exports.T721CSAPI = function () {
                             case 0:
                                 return _context8.abrupt("return", new Promise(function () {
                                     var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(ok, ko) {
+                                        var challenge;
                                         return regeneratorRuntime.wrap(function _callee7$(_context7) {
                                             while (1) {
                                                 switch (_context7.prev = _context7.next) {
                                                     case 0:
-                                                        try {
-                                                            if (_this4.token) {
-                                                                _this4.request.get({ url: _this4.url + "/", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this4.token } }, function (err, resp, body) {
-                                                                    if (err) {
-                                                                        ko(err);
-                                                                    } else {
-                                                                        var parsed_body = JSON.parse(body);
-                                                                        ok(parsed_body);
-                                                                    }
-                                                                });
-                                                            } else {
-                                                                _this4.request.get({ url: _this4.url + "/", followAllRedirects: true }, function (err, resp, body) {
-                                                                    if (err) {
-                                                                        ko(err);
-                                                                    } else {
-                                                                        var parsed_body = JSON.parse(body);
-                                                                        ok(parsed_body);
-                                                                    }
-                                                                });
-                                                            }
-                                                        } catch (e) {
-                                                            ko(e);
+                                                        _context7.prev = 0;
+
+                                                        if (!_this4.token) {
+                                                            _context7.next = 5;
+                                                            break;
                                                         }
 
-                                                    case 1:
+                                                        ok(true);
+                                                        _context7.next = 13;
+                                                        break;
+
+                                                    case 5:
+                                                        if (_signature) {
+                                                            _context7.next = 12;
+                                                            break;
+                                                        }
+
+                                                        _context7.next = 8;
+                                                        return _this4.challenge();
+
+                                                    case 8:
+                                                        challenge = _context7.sent;
+                                                        _context7.next = 11;
+                                                        return _this4.signChallenge(challenge);
+
+                                                    case 11:
+                                                        _signature = _context7.sent;
+
+                                                    case 12:
+                                                        _this4.request.post({ url: _this4.url + "/login", followAllRedirects: true, form: { address: _this4.coinbase, signature: _signature } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                _this4.token = parsed_body.token;
+                                                                ok(_this4.token);
+                                                            }
+                                                        });
+
+                                                    case 13:
+                                                        _context7.next = 18;
+                                                        break;
+
+                                                    case 15:
+                                                        _context7.prev = 15;
+                                                        _context7.t0 = _context7["catch"](0);
+
+                                                        ko(_context7.t0);
+
+                                                    case 18:
                                                     case "end":
                                                         return _context7.stop();
                                                 }
                                             }
-                                        }, _callee7, _this4);
+                                        }, _callee7, _this4, [[0, 15]]);
                                     }));
 
-                                    return function (_x9, _x10) {
+                                    return function (_x10, _x11) {
                                         return _ref8.apply(this, arguments);
                                     };
                                 }()));
@@ -362,14 +353,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee8, this);
             }));
 
-            function get_infos() {
+            function connect(_x9) {
                 return _ref7.apply(this, arguments);
             }
 
-            return get_infos;
+            return connect;
         }()
     }, {
-        key: "get_events",
+        key: "get_infos",
         value: function () {
             var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
                 var _this5 = this;
@@ -385,14 +376,25 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                 switch (_context9.prev = _context9.next) {
                                                     case 0:
                                                         try {
-                                                            _this5.request.get({ url: _this5.url + "/get_events", followAllRedirects: true }, function (err, resp, body) {
-                                                                if (err) {
-                                                                    ko(err);
-                                                                } else {
-                                                                    var parsed_body = JSON.parse(body);
-                                                                    ok(parsed_body);
-                                                                }
-                                                            });
+                                                            if (_this5.token) {
+                                                                _this5.request.get({ url: _this5.url + "/", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this5.token } }, function (err, resp, body) {
+                                                                    if (err) {
+                                                                        ko(err);
+                                                                    } else {
+                                                                        var parsed_body = JSON.parse(body);
+                                                                        ok(parsed_body);
+                                                                    }
+                                                                });
+                                                            } else {
+                                                                _this5.request.get({ url: _this5.url + "/", followAllRedirects: true }, function (err, resp, body) {
+                                                                    if (err) {
+                                                                        ko(err);
+                                                                    } else {
+                                                                        var parsed_body = JSON.parse(body);
+                                                                        ok(parsed_body);
+                                                                    }
+                                                                });
+                                                            }
                                                         } catch (e) {
                                                             ko(e);
                                                         }
@@ -405,7 +407,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         }, _callee9, _this5);
                                     }));
 
-                                    return function (_x11, _x12) {
+                                    return function (_x12, _x13) {
                                         return _ref10.apply(this, arguments);
                                     };
                                 }()));
@@ -418,14 +420,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee10, this);
             }));
 
-            function get_events() {
+            function get_infos() {
                 return _ref9.apply(this, arguments);
             }
 
-            return get_events;
+            return get_infos;
         }()
     }, {
-        key: "registered",
+        key: "get_events",
         value: function () {
             var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
                 var _this6 = this;
@@ -441,7 +443,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                 switch (_context11.prev = _context11.next) {
                                                     case 0:
                                                         try {
-                                                            _this6.request.post({ url: _this6.url + "/registered", followAllRedirects: true, form: { address: _this6.coinbase } }, function (err, resp, body) {
+                                                            _this6.request.get({ url: _this6.url + "/get_events", followAllRedirects: true }, function (err, resp, body) {
                                                                 if (err) {
                                                                     ko(err);
                                                                 } else {
@@ -461,7 +463,7 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         }, _callee11, _this6);
                                     }));
 
-                                    return function (_x13, _x14) {
+                                    return function (_x14, _x15) {
                                         return _ref12.apply(this, arguments);
                                     };
                                 }()));
@@ -474,14 +476,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee12, this);
             }));
 
-            function registered() {
+            function get_events() {
                 return _ref11.apply(this, arguments);
             }
 
-            return registered;
+            return get_events;
         }()
     }, {
-        key: "fetch_wallets",
+        key: "registered",
         value: function () {
             var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
                 var _this7 = this;
@@ -496,46 +498,28 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                             while (1) {
                                                 switch (_context13.prev = _context13.next) {
                                                     case 0:
-                                                        _context13.prev = 0;
-
-                                                        if (!_this7.token) {
-                                                            _context13.next = 5;
-                                                            break;
+                                                        try {
+                                                            _this7.request.post({ url: _this7.url + "/registered", followAllRedirects: true, form: { address: _this7.coinbase } }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
                                                         }
 
-                                                        _this7.request.get({ url: _this7.url + "/refresh_wallets", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this7.token } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body);
-                                                            }
-                                                        });
-                                                        _context13.next = 6;
-                                                        break;
-
-                                                    case 5:
-                                                        throw new Error("Calling refresh_wallets requires you to be logged");
-
-                                                    case 6:
-                                                        _context13.next = 11;
-                                                        break;
-
-                                                    case 8:
-                                                        _context13.prev = 8;
-                                                        _context13.t0 = _context13["catch"](0);
-
-                                                        ko(_context13.t0);
-
-                                                    case 11:
+                                                    case 1:
                                                     case "end":
                                                         return _context13.stop();
                                                 }
                                             }
-                                        }, _callee13, _this7, [[0, 8]]);
+                                        }, _callee13, _this7);
                                     }));
 
-                                    return function (_x15, _x16) {
+                                    return function (_x16, _x17) {
                                         return _ref14.apply(this, arguments);
                                     };
                                 }()));
@@ -548,8 +532,82 @@ var T721CSAPI = exports.T721CSAPI = function () {
                 }, _callee14, this);
             }));
 
-            function fetch_wallets() {
+            function registered() {
                 return _ref13.apply(this, arguments);
+            }
+
+            return registered;
+        }()
+    }, {
+        key: "fetch_wallets",
+        value: function () {
+            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
+                var _this8 = this;
+
+                return regeneratorRuntime.wrap(function _callee16$(_context16) {
+                    while (1) {
+                        switch (_context16.prev = _context16.next) {
+                            case 0:
+                                return _context16.abrupt("return", new Promise(function () {
+                                    var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                                            while (1) {
+                                                switch (_context15.prev = _context15.next) {
+                                                    case 0:
+                                                        _context15.prev = 0;
+
+                                                        if (!_this8.token) {
+                                                            _context15.next = 5;
+                                                            break;
+                                                        }
+
+                                                        _this8.request.get({ url: _this8.url + "/refresh_wallets", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this8.token } }, function (err, resp, body) {
+                                                            if (err) {
+                                                                ko(err);
+                                                            } else {
+                                                                var parsed_body = JSON.parse(body);
+                                                                ok(parsed_body);
+                                                            }
+                                                        });
+                                                        _context15.next = 6;
+                                                        break;
+
+                                                    case 5:
+                                                        throw new Error("Calling refresh_wallets requires you to be logged");
+
+                                                    case 6:
+                                                        _context15.next = 11;
+                                                        break;
+
+                                                    case 8:
+                                                        _context15.prev = 8;
+                                                        _context15.t0 = _context15["catch"](0);
+
+                                                        ko(_context15.t0);
+
+                                                    case 11:
+                                                    case "end":
+                                                        return _context15.stop();
+                                                }
+                                            }
+                                        }, _callee15, _this8, [[0, 8]]);
+                                    }));
+
+                                    return function (_x18, _x19) {
+                                        return _ref16.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context16.stop();
+                        }
+                    }
+                }, _callee16, this);
+            }));
+
+            function fetch_wallets() {
+                return _ref15.apply(this, arguments);
             }
 
             return fetch_wallets;
@@ -557,23 +615,23 @@ var T721CSAPI = exports.T721CSAPI = function () {
     }, {
         key: "signChallenge",
         value: function () {
-            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(challenge) {
-                var _this8 = this;
+            var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(challenge) {
+                var _this9 = this;
 
-                return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                return regeneratorRuntime.wrap(function _callee17$(_context17) {
                     while (1) {
-                        switch (_context15.prev = _context15.next) {
+                        switch (_context17.prev = _context17.next) {
                             case 0:
-                                return _context15.abrupt("return", new Promise(function (ok, ko) {
+                                return _context17.abrupt("return", new Promise(function (ok, ko) {
                                     var msgParams = [{
                                         type: 'string',
                                         name: 'challenge',
                                         value: challenge
                                     }];
                                     try {
-                                        _this8.web3.currentProvider.sendAsync({
+                                        _this9.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this8.coinbase]
+                                            params: [msgParams, _this9.coinbase]
                                         }, function (err, result) {
                                             if (err) {
                                                 ko(err);
@@ -588,14 +646,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context15.stop();
+                                return _context17.stop();
                         }
                     }
-                }, _callee15, this);
+                }, _callee17, this);
             }));
 
-            function signChallenge(_x17) {
-                return _ref15.apply(this, arguments);
+            function signChallenge(_x20) {
+                return _ref17.apply(this, arguments);
             }
 
             return signChallenge;

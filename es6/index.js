@@ -73,6 +73,24 @@ export class T721CSAPI {
         });
     }
 
+    async check_token(_token) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.get({url: this.url + "/check_token", followAllRedirects: true, headers: {'Authorization': 'bearer ' + _token}}, (err, resp, body) => {
+                    if (err) {
+                        ko(err);
+                    } else {
+                        if (resp.statusCode === 200) {
+                            this.token = _token;
+                        }
+                        ok(resp.statusCode === 200);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
 
     async connect(_signature) {
         return new Promise(async (ok, ko) => {
@@ -90,7 +108,7 @@ export class T721CSAPI {
                         } else {
                             const parsed_body = JSON.parse(body);
                             this.token = parsed_body.token;
-                            ok(true);
+                            ok(this.token);
                         }
                     })
                 }
