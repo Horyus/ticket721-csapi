@@ -56,6 +56,7 @@ export class T721CSAPI {
                         ko(err);
                     } else {
                         const parsed_body = JSON.parse(body);
+                        console.log("HERE ?");
                         if (compareAddress(parsed_body.address, this.coinbase)) {
                             try {
                                 ok(await this.connect(signature));
@@ -203,6 +204,29 @@ export class T721CSAPI {
 
     async signChallenge(challenge) {
         return new Promise((ok, ko) => {
+            //const newMsgParams = {
+            //    "types":{
+            //        "EIP712Domain":[
+            //            {
+            //                "name":"name",
+            //                "type":"string"
+            //            }
+            //        ],
+            //        "Challenge":[
+            //            {
+            //                "name":"challenge",
+            //                "type":"string"
+            //            }
+            //        ]
+            //    },
+            //    "primaryType":"Challenge",
+            //    "domain":{
+            //        "name":"Ticket721 Challenge"
+            //    },
+            //    "message":{
+            //        "challenge": challenge
+            //    }
+            //};
             const msgParams = [{
                 type: 'string',
                 name: 'challenge',
@@ -211,10 +235,11 @@ export class T721CSAPI {
             try {
                 this.web3.currentProvider.sendAsync({
                     method: 'eth_signTypedData',
-                    params: [msgParams, this.coinbase]
+                    params: [msgParams, this.coinbase],
+                    from: this.coinbase
                 }, (err, result) => {
-                    if (err) {
-                        ko(err);
+                    if (err || result.error) {
+                        ko(err || result.error);
                     } else {
                         ok(result.result);
                     }

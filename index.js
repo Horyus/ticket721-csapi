@@ -125,47 +125,49 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                                                 }
 
                                                                                 ko(err);
-                                                                                _context2.next = 20;
+                                                                                _context2.next = 21;
                                                                                 break;
 
                                                                             case 4:
                                                                                 parsed_body = JSON.parse(body);
 
+                                                                                console.log("HERE ?");
+
                                                                                 if (!compareAddress(parsed_body.address, _this2.coinbase)) {
-                                                                                    _context2.next = 19;
+                                                                                    _context2.next = 20;
                                                                                     break;
                                                                                 }
 
-                                                                                _context2.prev = 6;
+                                                                                _context2.prev = 7;
                                                                                 _context2.t0 = ok;
-                                                                                _context2.next = 10;
+                                                                                _context2.next = 11;
                                                                                 return _this2.connect(signature);
 
-                                                                            case 10:
+                                                                            case 11:
                                                                                 _context2.t1 = _context2.sent;
                                                                                 (0, _context2.t0)(_context2.t1);
-                                                                                _context2.next = 17;
+                                                                                _context2.next = 18;
                                                                                 break;
 
-                                                                            case 14:
-                                                                                _context2.prev = 14;
-                                                                                _context2.t2 = _context2["catch"](6);
+                                                                            case 15:
+                                                                                _context2.prev = 15;
+                                                                                _context2.t2 = _context2["catch"](7);
 
                                                                                 ko(_context2.t2);
 
-                                                                            case 17:
-                                                                                _context2.next = 20;
+                                                                            case 18:
+                                                                                _context2.next = 21;
                                                                                 break;
 
-                                                                            case 19:
+                                                                            case 20:
                                                                                 ko(new Error("Invalid returned address"));
 
-                                                                            case 20:
+                                                                            case 21:
                                                                             case "end":
                                                                                 return _context2.stop();
                                                                         }
                                                                     }
-                                                                }, _callee2, _this2, [[6, 14]]);
+                                                                }, _callee2, _this2, [[7, 15]]);
                                                             }));
 
                                                             return function (_x3, _x4, _x5) {
@@ -623,6 +625,29 @@ var T721CSAPI = exports.T721CSAPI = function () {
                         switch (_context17.prev = _context17.next) {
                             case 0:
                                 return _context17.abrupt("return", new Promise(function (ok, ko) {
+                                    //const newMsgParams = {
+                                    //    "types":{
+                                    //        "EIP712Domain":[
+                                    //            {
+                                    //                "name":"name",
+                                    //                "type":"string"
+                                    //            }
+                                    //        ],
+                                    //        "Challenge":[
+                                    //            {
+                                    //                "name":"challenge",
+                                    //                "type":"string"
+                                    //            }
+                                    //        ]
+                                    //    },
+                                    //    "primaryType":"Challenge",
+                                    //    "domain":{
+                                    //        "name":"Ticket721 Challenge"
+                                    //    },
+                                    //    "message":{
+                                    //        "challenge": challenge
+                                    //    }
+                                    //};
                                     var msgParams = [{
                                         type: 'string',
                                         name: 'challenge',
@@ -631,10 +656,11 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                     try {
                                         _this9.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this9.coinbase]
+                                            params: [msgParams, _this9.coinbase],
+                                            from: _this9.coinbase
                                         }, function (err, result) {
-                                            if (err) {
-                                                ko(err);
+                                            if (err || result.error) {
+                                                ko(err || result.error);
                                             } else {
                                                 ok(result.result);
                                             }
