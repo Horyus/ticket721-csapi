@@ -541,90 +541,16 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return registered;
         }()
     }, {
-        key: "fetch_wallets",
-        value: function () {
-            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16() {
-                var _this8 = this;
-
-                return regeneratorRuntime.wrap(function _callee16$(_context16) {
-                    while (1) {
-                        switch (_context16.prev = _context16.next) {
-                            case 0:
-                                return _context16.abrupt("return", new Promise(function () {
-                                    var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(ok, ko) {
-                                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
-                                            while (1) {
-                                                switch (_context15.prev = _context15.next) {
-                                                    case 0:
-                                                        _context15.prev = 0;
-
-                                                        if (!_this8.token) {
-                                                            _context15.next = 5;
-                                                            break;
-                                                        }
-
-                                                        _this8.request.get({ url: _this8.url + "/refresh_wallets", followAllRedirects: true, headers: { 'Authorization': 'bearer ' + _this8.token } }, function (err, resp, body) {
-                                                            if (err) {
-                                                                ko(err);
-                                                            } else {
-                                                                var parsed_body = JSON.parse(body);
-                                                                ok(parsed_body);
-                                                            }
-                                                        });
-                                                        _context15.next = 6;
-                                                        break;
-
-                                                    case 5:
-                                                        throw new Error("Calling refresh_wallets requires you to be logged");
-
-                                                    case 6:
-                                                        _context15.next = 11;
-                                                        break;
-
-                                                    case 8:
-                                                        _context15.prev = 8;
-                                                        _context15.t0 = _context15["catch"](0);
-
-                                                        ko(_context15.t0);
-
-                                                    case 11:
-                                                    case "end":
-                                                        return _context15.stop();
-                                                }
-                                            }
-                                        }, _callee15, _this8, [[0, 8]]);
-                                    }));
-
-                                    return function (_x18, _x19) {
-                                        return _ref16.apply(this, arguments);
-                                    };
-                                }()));
-
-                            case 1:
-                            case "end":
-                                return _context16.stop();
-                        }
-                    }
-                }, _callee16, this);
-            }));
-
-            function fetch_wallets() {
-                return _ref15.apply(this, arguments);
-            }
-
-            return fetch_wallets;
-        }()
-    }, {
         key: "signChallenge",
         value: function () {
-            var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(challenge) {
-                var _this9 = this;
+            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(challenge) {
+                var _this8 = this;
 
-                return regeneratorRuntime.wrap(function _callee17$(_context17) {
+                return regeneratorRuntime.wrap(function _callee15$(_context15) {
                     while (1) {
-                        switch (_context17.prev = _context17.next) {
+                        switch (_context15.prev = _context15.next) {
                             case 0:
-                                return _context17.abrupt("return", new Promise(function (ok, ko) {
+                                return _context15.abrupt("return", new Promise(function (ok, ko) {
                                     //const newMsgParams = {
                                     //    "types":{
                                     //        "EIP712Domain":[
@@ -654,10 +580,10 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         value: challenge
                                     }];
                                     try {
-                                        _this9.web3.currentProvider.sendAsync({
+                                        _this8.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this9.coinbase],
-                                            from: _this9.coinbase
+                                            params: [msgParams, _this8.coinbase],
+                                            from: _this8.coinbase
                                         }, function (err, result) {
                                             if (err || result.error) {
                                                 ko(err || result.error);
@@ -672,14 +598,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context17.stop();
+                                return _context15.stop();
                         }
                     }
-                }, _callee17, this);
+                }, _callee15, this);
             }));
 
-            function signChallenge(_x20) {
-                return _ref17.apply(this, arguments);
+            function signChallenge(_x18) {
+                return _ref15.apply(this, arguments);
             }
 
             return signChallenge;

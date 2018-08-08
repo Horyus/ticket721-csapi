@@ -181,27 +181,6 @@ export class T721CSAPI {
         });
     }
 
-    async fetch_wallets() {
-        return new Promise(async (ok, ko) => {
-            try {
-                if (this.token) {
-                    this.request.get({url: this.url + "/refresh_wallets", followAllRedirects: true, headers: {'Authorization': 'bearer ' + this.token}}, (err, resp, body) => {
-                        if (err) {
-                            ko(err);
-                        } else {
-                            const parsed_body = JSON.parse(body);
-                            ok(parsed_body);
-                        }
-                    })
-                } else {
-                    throw new Error("Calling refresh_wallets requires you to be logged");
-                }
-            } catch (e) {
-                ko(e);
-            }
-        });
-    }
-
     async signChallenge(challenge) {
         return new Promise((ok, ko) => {
             //const newMsgParams = {
