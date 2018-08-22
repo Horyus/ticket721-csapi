@@ -125,49 +125,47 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                                                 }
 
                                                                                 ko(err);
-                                                                                _context2.next = 21;
+                                                                                _context2.next = 20;
                                                                                 break;
 
                                                                             case 4:
                                                                                 parsed_body = JSON.parse(body);
 
-                                                                                console.log("HERE ?");
-
                                                                                 if (!compareAddress(parsed_body.address, _this2.coinbase)) {
-                                                                                    _context2.next = 20;
+                                                                                    _context2.next = 19;
                                                                                     break;
                                                                                 }
 
-                                                                                _context2.prev = 7;
+                                                                                _context2.prev = 6;
                                                                                 _context2.t0 = ok;
-                                                                                _context2.next = 11;
+                                                                                _context2.next = 10;
                                                                                 return _this2.connect(signature);
 
-                                                                            case 11:
+                                                                            case 10:
                                                                                 _context2.t1 = _context2.sent;
                                                                                 (0, _context2.t0)(_context2.t1);
-                                                                                _context2.next = 18;
+                                                                                _context2.next = 17;
                                                                                 break;
 
-                                                                            case 15:
-                                                                                _context2.prev = 15;
-                                                                                _context2.t2 = _context2["catch"](7);
+                                                                            case 14:
+                                                                                _context2.prev = 14;
+                                                                                _context2.t2 = _context2["catch"](6);
 
                                                                                 ko(_context2.t2);
 
-                                                                            case 18:
-                                                                                _context2.next = 21;
+                                                                            case 17:
+                                                                                _context2.next = 20;
                                                                                 break;
 
-                                                                            case 20:
+                                                                            case 19:
                                                                                 ko(new Error("Invalid returned address"));
 
-                                                                            case 21:
+                                                                            case 20:
                                                                             case "end":
                                                                                 return _context2.stop();
                                                                         }
                                                                     }
-                                                                }, _callee2, _this2, [[7, 15]]);
+                                                                }, _callee2, _this2, [[6, 14]]);
                                                             }));
 
                                                             return function (_x3, _x4, _x5) {
@@ -541,16 +539,128 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return registered;
         }()
     }, {
-        key: "signChallenge",
+        key: "link_code",
         value: function () {
-            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(challenge) {
+            var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16(address) {
                 var _this8 = this;
 
-                return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                return regeneratorRuntime.wrap(function _callee16$(_context16) {
                     while (1) {
-                        switch (_context15.prev = _context15.next) {
+                        switch (_context16.prev = _context16.next) {
                             case 0:
-                                return _context15.abrupt("return", new Promise(function (ok, ko) {
+                                return _context16.abrupt("return", new Promise(function () {
+                                    var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                                            while (1) {
+                                                switch (_context15.prev = _context15.next) {
+                                                    case 0:
+                                                        try {
+                                                            _this8.request.post({ url: _this8.url + '/link_code', followAllRedirects: true, form: { address: address } }, function (err, resp, body) {
+                                                                if (err) {
+                                                                    ko(err);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body.code);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
+                                                        }
+
+                                                    case 1:
+                                                    case "end":
+                                                        return _context15.stop();
+                                                }
+                                            }
+                                        }, _callee15, _this8);
+                                    }));
+
+                                    return function (_x19, _x20) {
+                                        return _ref16.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context16.stop();
+                        }
+                    }
+                }, _callee16, this);
+            }));
+
+            function link_code(_x18) {
+                return _ref15.apply(this, arguments);
+            }
+
+            return link_code;
+        }()
+    }, {
+        key: "get_address_from_code",
+        value: function () {
+            var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee18(code) {
+                var _this9 = this;
+
+                return regeneratorRuntime.wrap(function _callee18$(_context18) {
+                    while (1) {
+                        switch (_context18.prev = _context18.next) {
+                            case 0:
+                                return _context18.abrupt("return", new Promise(function () {
+                                    var _ref18 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee17$(_context17) {
+                                            while (1) {
+                                                switch (_context17.prev = _context17.next) {
+                                                    case 0:
+                                                        try {
+                                                            _this9.request.get({ url: _this9.url + '/link_code/' + code, followAllRedirects: true }, function (err, resp, body) {
+                                                                if (err || resp.statusCode >= 500 && resp.statusCode < 600) {
+                                                                    ko(err || resp.statusCode);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body.address);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
+                                                        }
+
+                                                    case 1:
+                                                    case "end":
+                                                        return _context17.stop();
+                                                }
+                                            }
+                                        }, _callee17, _this9);
+                                    }));
+
+                                    return function (_x22, _x23) {
+                                        return _ref18.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context18.stop();
+                        }
+                    }
+                }, _callee18, this);
+            }));
+
+            function get_address_from_code(_x21) {
+                return _ref17.apply(this, arguments);
+            }
+
+            return get_address_from_code;
+        }()
+    }, {
+        key: "signChallenge",
+        value: function () {
+            var _ref19 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee19(challenge) {
+                var _this10 = this;
+
+                return regeneratorRuntime.wrap(function _callee19$(_context19) {
+                    while (1) {
+                        switch (_context19.prev = _context19.next) {
+                            case 0:
+                                return _context19.abrupt("return", new Promise(function (ok, ko) {
                                     //const newMsgParams = {
                                     //    "types":{
                                     //        "EIP712Domain":[
@@ -580,10 +690,11 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         value: challenge
                                     }];
                                     try {
-                                        _this8.web3.currentProvider.sendAsync({
+                                        console.log(_this10.web3.currentProvider);
+                                        _this10.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this8.coinbase],
-                                            from: _this8.coinbase
+                                            params: [msgParams, _this10.coinbase],
+                                            from: _this10.coinbase
                                         }, function (err, result) {
                                             if (err || result.error) {
                                                 ko(err || result.error);
@@ -598,14 +709,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context15.stop();
+                                return _context19.stop();
                         }
                     }
-                }, _callee15, this);
+                }, _callee19, this);
             }));
 
-            function signChallenge(_x18) {
-                return _ref15.apply(this, arguments);
+            function signChallenge(_x24) {
+                return _ref19.apply(this, arguments);
             }
 
             return signChallenge;
