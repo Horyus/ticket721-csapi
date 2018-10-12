@@ -214,6 +214,24 @@ export class T721CSAPI {
         });
     }
 
+    async get_ticket_history(id, verified) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.post({url: this.url + '/get_history', followAllRedirects: true, form: {id, verified}}, (err, resp, body) => {
+                    console.log(err, resp, body);
+                    if (err || (resp.statusCode >= 500 && resp.statusCode < 600)) {
+                        ko(err || resp.statusCode);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.history);
+                    }
+                });
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
     async signChallenge(challenge) {
         return new Promise((ok, ko) => {
             //const newMsgParams = {

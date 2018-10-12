@@ -651,16 +651,73 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return get_address_from_code;
         }()
     }, {
-        key: "signChallenge",
+        key: "get_ticket_history",
         value: function () {
-            var _ref19 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee19(challenge) {
+            var _ref19 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee20(id, verified) {
                 var _this10 = this;
 
-                return regeneratorRuntime.wrap(function _callee19$(_context19) {
+                return regeneratorRuntime.wrap(function _callee20$(_context20) {
                     while (1) {
-                        switch (_context19.prev = _context19.next) {
+                        switch (_context20.prev = _context20.next) {
                             case 0:
-                                return _context19.abrupt("return", new Promise(function (ok, ko) {
+                                return _context20.abrupt("return", new Promise(function () {
+                                    var _ref20 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee19(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee19$(_context19) {
+                                            while (1) {
+                                                switch (_context19.prev = _context19.next) {
+                                                    case 0:
+                                                        try {
+                                                            _this10.request.post({ url: _this10.url + '/get_history', followAllRedirects: true, form: { id: id, verified: verified } }, function (err, resp, body) {
+                                                                console.log(err, resp, body);
+                                                                if (err || resp.statusCode >= 500 && resp.statusCode < 600) {
+                                                                    ko(err || resp.statusCode);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body.history);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
+                                                        }
+
+                                                    case 1:
+                                                    case "end":
+                                                        return _context19.stop();
+                                                }
+                                            }
+                                        }, _callee19, _this10);
+                                    }));
+
+                                    return function (_x26, _x27) {
+                                        return _ref20.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context20.stop();
+                        }
+                    }
+                }, _callee20, this);
+            }));
+
+            function get_ticket_history(_x24, _x25) {
+                return _ref19.apply(this, arguments);
+            }
+
+            return get_ticket_history;
+        }()
+    }, {
+        key: "signChallenge",
+        value: function () {
+            var _ref21 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21(challenge) {
+                var _this11 = this;
+
+                return regeneratorRuntime.wrap(function _callee21$(_context21) {
+                    while (1) {
+                        switch (_context21.prev = _context21.next) {
+                            case 0:
+                                return _context21.abrupt("return", new Promise(function (ok, ko) {
                                     //const newMsgParams = {
                                     //    "types":{
                                     //        "EIP712Domain":[
@@ -690,11 +747,11 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         value: challenge
                                     }];
                                     try {
-                                        console.log(_this10.web3.currentProvider);
-                                        _this10.web3.currentProvider.sendAsync({
+                                        console.log(_this11.web3.currentProvider);
+                                        _this11.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this10.coinbase],
-                                            from: _this10.coinbase
+                                            params: [msgParams, _this11.coinbase],
+                                            from: _this11.coinbase
                                         }, function (err, result) {
                                             if (err || result.error) {
                                                 ko(err || result.error);
@@ -709,14 +766,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context19.stop();
+                                return _context21.stop();
                         }
                     }
-                }, _callee19, this);
+                }, _callee21, this);
             }));
 
-            function signChallenge(_x24) {
-                return _ref19.apply(this, arguments);
+            function signChallenge(_x28) {
+                return _ref21.apply(this, arguments);
             }
 
             return signChallenge;
