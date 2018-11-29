@@ -668,7 +668,6 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                                     case 0:
                                                         try {
                                                             _this10.request.post({ url: _this10.url + '/get_history', followAllRedirects: true, form: { id: id, verified: verified } }, function (err, resp, body) {
-                                                                console.log(err, resp, body);
                                                                 if (err || resp.statusCode >= 500 && resp.statusCode < 600) {
                                                                     ko(err || resp.statusCode);
                                                                 } else {
@@ -708,16 +707,72 @@ var T721CSAPI = exports.T721CSAPI = function () {
             return get_ticket_history;
         }()
     }, {
-        key: "signChallenge",
+        key: "get_sold_tickets",
         value: function () {
-            var _ref21 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21(challenge) {
+            var _ref21 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee22(verified) {
                 var _this11 = this;
 
-                return regeneratorRuntime.wrap(function _callee21$(_context21) {
+                return regeneratorRuntime.wrap(function _callee22$(_context22) {
                     while (1) {
-                        switch (_context21.prev = _context21.next) {
+                        switch (_context22.prev = _context22.next) {
                             case 0:
-                                return _context21.abrupt("return", new Promise(function (ok, ko) {
+                                return _context22.abrupt("return", new Promise(function () {
+                                    var _ref22 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21(ok, ko) {
+                                        return regeneratorRuntime.wrap(function _callee21$(_context21) {
+                                            while (1) {
+                                                switch (_context21.prev = _context21.next) {
+                                                    case 0:
+                                                        try {
+                                                            _this11.request.post({ url: _this11.url + '/get_sold_tickets', followAllRedirects: true, form: { verified: verified } }, function (err, resp, body) {
+                                                                if (err || resp.statusCode >= 500 && resp.statusCode < 600) {
+                                                                    ko(err || resp.statusCode);
+                                                                } else {
+                                                                    var parsed_body = JSON.parse(body);
+                                                                    ok(parsed_body.history);
+                                                                }
+                                                            });
+                                                        } catch (e) {
+                                                            ko(e);
+                                                        }
+
+                                                    case 1:
+                                                    case "end":
+                                                        return _context21.stop();
+                                                }
+                                            }
+                                        }, _callee21, _this11);
+                                    }));
+
+                                    return function (_x29, _x30) {
+                                        return _ref22.apply(this, arguments);
+                                    };
+                                }()));
+
+                            case 1:
+                            case "end":
+                                return _context22.stop();
+                        }
+                    }
+                }, _callee22, this);
+            }));
+
+            function get_sold_tickets(_x28) {
+                return _ref21.apply(this, arguments);
+            }
+
+            return get_sold_tickets;
+        }()
+    }, {
+        key: "signChallenge",
+        value: function () {
+            var _ref23 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee23(challenge) {
+                var _this12 = this;
+
+                return regeneratorRuntime.wrap(function _callee23$(_context23) {
+                    while (1) {
+                        switch (_context23.prev = _context23.next) {
+                            case 0:
+                                return _context23.abrupt("return", new Promise(function (ok, ko) {
                                     //const newMsgParams = {
                                     //    "types":{
                                     //        "EIP712Domain":[
@@ -747,11 +802,11 @@ var T721CSAPI = exports.T721CSAPI = function () {
                                         value: challenge
                                     }];
                                     try {
-                                        console.log(_this11.web3.currentProvider);
-                                        _this11.web3.currentProvider.sendAsync({
+                                        console.log(_this12.web3.currentProvider);
+                                        _this12.web3.currentProvider.sendAsync({
                                             method: 'eth_signTypedData',
-                                            params: [msgParams, _this11.coinbase],
-                                            from: _this11.coinbase
+                                            params: [msgParams, _this12.coinbase],
+                                            from: _this12.coinbase
                                         }, function (err, result) {
                                             if (err || result.error) {
                                                 ko(err || result.error);
@@ -766,14 +821,14 @@ var T721CSAPI = exports.T721CSAPI = function () {
 
                             case 1:
                             case "end":
-                                return _context21.stop();
+                                return _context23.stop();
                         }
                     }
-                }, _callee21, this);
+                }, _callee23, this);
             }));
 
-            function signChallenge(_x28) {
-                return _ref21.apply(this, arguments);
+            function signChallenge(_x31) {
+                return _ref23.apply(this, arguments);
             }
 
             return signChallenge;
