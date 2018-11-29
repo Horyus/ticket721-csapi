@@ -56,7 +56,6 @@ export class T721CSAPI {
                         ko(err);
                     } else {
                         const parsed_body = JSON.parse(body);
-                        console.log("HERE ?");
                         if (compareAddress(parsed_body.address, this.coinbase)) {
                             try {
                                 ok(await this.connect(signature));
@@ -181,6 +180,74 @@ export class T721CSAPI {
         });
     }
 
+    async link_code(address) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.post({url: this.url + '/link_code', followAllRedirects: true, form: {address: address}}, (err, resp, body) => {
+                    if (err) {
+                        ko(err)
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.code);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
+    async get_address_from_code(code) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.get({url: this.url + '/link_code/' + code, followAllRedirects: true}, (err, resp, body) => {
+                    if (err || (resp.statusCode >= 500 && resp.statusCode < 600)) {
+                        ko(err || resp.statusCode);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.address);
+                    }
+                })
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
+    async get_ticket_history(id, verified) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.post({url: this.url + '/get_history', followAllRedirects: true, form: {id, verified}}, (err, resp, body) => {
+                    if (err || (resp.statusCode >= 500 && resp.statusCode < 600)) {
+                        ko(err || resp.statusCode);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.history);
+                    }
+                });
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
+    async get_sold_tickets(verified) {
+        return new Promise(async (ok, ko) => {
+            try {
+                this.request.post({url: this.url + '/get_sold_tickets', followAllRedirects: true, form: {verified}}, (err, resp, body) => {
+                    if (err || (resp.statusCode >= 500 && resp.statusCode < 600)) {
+                        ko(err || resp.statusCode);
+                    } else {
+                        const parsed_body = JSON.parse(body);
+                        ok(parsed_body.history);
+                    }
+                });
+            } catch (e) {
+                ko(e);
+            }
+        });
+    }
+
     async signChallenge(challenge) {
         return new Promise((ok, ko) => {
             //const newMsgParams = {
@@ -212,6 +279,7 @@ export class T721CSAPI {
                 value: challenge
             }];
             try {
+                console.log(this.web3.currentProvider);
                 this.web3.currentProvider.sendAsync({
                     method: 'eth_signTypedData',
                     params: [msgParams, this.coinbase],
